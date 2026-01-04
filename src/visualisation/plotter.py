@@ -71,10 +71,14 @@ class Plotter:
         plt.xticks(rotation=45)
         self._finalize(title or f"{y} by {x}", xlabel or x, ylabel or y)
 
-    def plot_pie(self, data, labels, title=None, autopct='%1.1f%%', startangle=140):
+    def plot_pie(self, data, labels, title=None, autopct='%1.1f%%', startangle=140, legend=False):
         """Plot and save a pie chart."""
         plt.figure(figsize=(10, 10))
-        plt.pie(data, labels=labels, autopct=autopct, startangle=startangle)
+        if legend:
+            wedges, texts, autotexts = plt.pie(data, labels=None, autopct=autopct, startangle=startangle)
+            plt.legend(wedges, labels, title="Categories", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+        else:
+            plt.pie(data, labels=labels, autopct=autopct, startangle=startangle)
         self._finalize(title or "Pie Chart", None, None)
 
     def plot_time_series(self, df, date_col, value_col, title=None, xlabel=None, ylabel=None):
@@ -93,13 +97,13 @@ class Plotter:
 
     def plot_heatmap(self, corr_mat: pd.DataFrame, title: str | None = None, cmap: str = "coolwarm",
                      center: Optional[float] = 0, square: bool = True, annot: bool = False,
-                     figsize: tuple = (8, 6)):
+                     fmt: str = ".2f", figsize: tuple = (12, 8)):
         """Plot and save a correlation-style heatmap from a square DataFrame.
 
         Parameters
         - corr_mat: square DataFrame of pairwise values (e.g., correlations)
         - title: optional title used for display and filename
-        - cmap, center, square, annot: forwarded to seaborn.heatmap
+        - cmap, center, square, annot, fmt: forwarded to seaborn.heatmap
         - figsize: matplotlib figure size tuple
         """
         if corr_mat is None or corr_mat.empty:
@@ -107,9 +111,10 @@ class Plotter:
             return
 
         plt.figure(figsize=figsize)
-        sns.heatmap(corr_mat, cmap=cmap, center=center, square=square, annot=annot)
-        # rotate x tick labels if long
-        plt.xticks(rotation=45)
+        sns.heatmap(corr_mat, cmap=cmap, center=center, square=square, annot=annot, fmt=fmt)
+        # rotate x tick labels if long, align right
+        plt.xticks(rotation=45, ha='right')
+        plt.yticks(rotation=0)
         self._finalize(title or "Correlation Heatmap", None, None)
 
     def plot_density_by_class(
