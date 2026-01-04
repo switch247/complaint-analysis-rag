@@ -71,6 +71,12 @@ class Plotter:
         plt.xticks(rotation=45)
         self._finalize(title or f"{y} by {x}", xlabel or x, ylabel or y)
 
+    def plot_pie(self, data, labels, title=None, autopct='%1.1f%%', startangle=140):
+        """Plot and save a pie chart."""
+        plt.figure(figsize=(10, 10))
+        plt.pie(data, labels=labels, autopct=autopct, startangle=startangle)
+        self._finalize(title or "Pie Chart", None, None)
+
     def plot_time_series(self, df, date_col, value_col, title=None, xlabel=None, ylabel=None):
         """Plot and save a time series line chart."""
         plt.figure()
